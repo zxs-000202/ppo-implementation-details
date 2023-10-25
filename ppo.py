@@ -93,7 +93,9 @@ def make_env(gym_id, seed, idx, capture_video, run_name):
 
 
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
+    # 对layer的权重进行正交初始化 std参数表示初始化时所使用的标准差
     torch.nn.init.orthogonal_(layer.weight, std)
+    # 将layer的偏置初始化为常数值bias_const
     torch.nn.init.constant_(layer.bias, bias_const)
     return layer
 
@@ -102,6 +104,7 @@ class Agent(nn.Module):
     def __init__(self, envs):
         super(Agent, self).__init__()
         self.critic = nn.Sequential(
+            # .prod()是NumPy数组的一个方法，用于计算数组中所有元素的乘积。在这里，它被应用于观测空间形状的数组，以计算观测空间的总维度。
             layer_init(nn.Linear(np.array(envs.single_observation_space.shape).prod(), 64)),
             nn.Tanh(),
             layer_init(nn.Linear(64, 64)),
@@ -124,6 +127,7 @@ class Agent(nn.Module):
         probs = Categorical(logits=logits)
         if action is None:
             action = probs.sample()
+        # 返回动作、动作的对数概率、概率的熵以及状态的价值估计
         return action, probs.log_prob(action), probs.entropy(), self.critic(x)
 
 
