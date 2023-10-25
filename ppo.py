@@ -178,6 +178,7 @@ if __name__ == "__main__":
     start_time = time.time()
     next_obs = torch.Tensor(envs.reset()).to(device)
     next_done = torch.zeros(args.num_envs).to(device)
+    # 25000//4*128 = 48
     num_updates = args.total_timesteps // args.batch_size
 
     for update in range(1, num_updates + 1):
